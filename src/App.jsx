@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import CircuitBreakerNode from './Nodes/CircuitBreakerNode';
 import TransformerNode from './Nodes/TransformerNode';
+import DisconnectedNode from './Nodes/DisconnectedNode';
 import {
   ReactFlow,
   Background,
@@ -14,14 +15,17 @@ import { useState } from 'react';
 const nodeTypes = {
   breaker: CircuitBreakerNode,
   transformer: TransformerNode,
+  disconnected: DisconnectedNode,
 };
 const initialNodes = [
   { id: 'n1', type: 'breaker', position: { x: 0, y: 0 }, data: { label: 'CB-1' } },
   { id: 'n2', type: 'transformer', position: { x: 0, y: 150 }, data: { label: 'T-1' } },
+  { id: 'n3', type: 'disconnected', position: { x: 0, y: 300 }, data: { label: 'DS-1' } },
 ];
 
 const initialEdges = [
   { id: 'n1-n2', source: 'n1', target: 'n2' },
+  { id: 'n2-n3', source: 'n2', target: 'n3' },
 ];
 
 export default function App() {
