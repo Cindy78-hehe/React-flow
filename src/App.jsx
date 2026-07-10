@@ -1,4 +1,5 @@
 import { useCallback } from 'react';
+import CircuitBreakerNode from './Nodes/CircuitBreakerNode';
 import {
   ReactFlow,
   Background,
@@ -9,8 +10,11 @@ import {
 } from '@xyflow/react';
 import { useState } from 'react';
 
+const nodeTypes = {
+  breaker: CircuitBreakerNode,
+};
 const initialNodes = [
-  { id: 'n1', position: { x: 0, y: 0 }, data: { label: 'Node 1' } },
+  { id: 'n1', type: 'breaker', position: { x: 0, y: 0 }, data: { label: 'CB-1' } },
   { id: 'n2', position: { x: 0, y: 150 }, data: { label: 'Node 2' } },
 ];
 
@@ -43,6 +47,7 @@ export default function App() {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
+        nodeTypes={nodeTypes}
       >
         <Background />
         <Controls />
