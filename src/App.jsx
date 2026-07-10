@@ -1,9 +1,4 @@
-import { useCallback } from 'react';
-import CircuitBreakerNode from './Nodes/CircuitBreakerNode';
-import TransformerNode from './Nodes/TransformerNode';
-import DisconnectNode from './Nodes/DisconnectNode';
-import BusbarNode from './Nodes/BusbarNode';
-import FeederNode from './Nodes/FeederNode';
+import { useCallback, useRef, useState } from 'react';
 import {
   ReactFlow,
   Background,
@@ -12,32 +7,27 @@ import {
   applyEdgeChanges,
   addEdge,
 } from '@xyflow/react';
-import { useState } from 'react';
+
+import Sidebar from './Sidebar';
+import CircuitBreakerNode from './nodes/CircuitBreakerNode';
+import TransformerNode from './nodes/TransformerNode';
+import DisconnectNode from './nodes/DisconnectNode';
+import BusbarNode from './nodes/BusbarNode';
+import FeederNode from './nodes/FeederNode';
 
 const nodeTypes = {
   breaker: CircuitBreakerNode,
   transformer: TransformerNode,
-  disconnected: DisconnectNode,
+  disconnect: DisconnectNode,
   busbar: BusbarNode,
   feeder: FeederNode,
 };
-const initialNodes = [
-  { id: 'n1', type: 'breaker', position: { x: 0, y: 0 }, data: { label: 'CB-1' } },
-  { id: 'n2', type: 'transformer', position: { x: 0, y: 150 }, data: { label: 'T-1' } },
-  { id: 'n3', type: 'disconnected', position: { x: 0, y: 300 }, data: { label: 'DS-1' } },
-  { id: 'n4', type: 'busbar', position: { x: 200, y: 150 }, data: { label: 'Busbar-1' } },
-  { id: 'n5', type: 'feeder', position: { x: 200, y: 300 }, data: { label: 'Feeder-1' } },
-];
-
-const initialEdges = [
-  { id: 'n1-n2', source: 'n1', target: 'n2' },
-  { id: 'n2-n3', source: 'n2', target: 'n3' },
-  { id: 'n2-n4', source: 'n2', target: 'n4' },
-];
 
 export default function App() {
-  const [nodes, setNodes] = useState(initialNodes);
-  const [edges, setEdges] = useState(initialEdges);
+  const [nodes, setNodes] = useState([]);
+  const [edges, setEdges] = useState([]);
+  const [reactFlowInstance, setReactFlowInstance] = useState(null);
+  const wrapperRef = useRef(null);
 
   const onNodesChange = useCallback(
     (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
@@ -52,19 +42,56 @@ export default function App() {
     []
   );
 
+  // ---- drop zone: Moment 3 from your toy example, now for real ----
+  function onDragOver(event) {
+    event.preventDefault(); // <-- same line as before: "yes, dropping is allowed here"
+  }
+
+  function onDrop(event) {
+    event.preventDefault();
+
+    const type = event.dataTransfer.getData('text/plain'); // <-- unpack the bag
+    if (!type || !reactFlowInstance) return;
+
+    const bounds = wrapperRef.current.getBoundingClientRect();
+    const position = reactFlowInstance.screenToFlowPosition({
+      x: event.clientX - bounds.left,
+      y: event.clientY - bounds.top,
+    });
+
+    const newNode = {
+      id: `${type}-${Date.now()}`,
+      type,
+      position,
+      data: { label: type.toUpperCase() },
+    };
+
+    setNodes((current) => [...current, newNode]);
+  }
+
   return (
-    <div style={{ width: '100vw', height: '100vh' }}>
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
-        nodeTypes={nodeTypes}
+    <div style={{ display: 'flex', width: '100vw', height: '100vh' }}>
+      <Sidebar />
+
+      <div
+        ref={wrapperRef}
+        style={{ flex: 1 }}
+        onDragOver={onDragOver}
+        onDrop={onDrop}
       >
-        <Background />
-        <Controls />
-      </ReactFlow>
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onConnect={onConnect}
+          onInit={setReactFlowInstance}
+          nodeTypes={nodeTypes}
+        >
+          <Background />
+          <Controls />
+        </ReactFlow>
+      </div>
     </div>
   );
 }
