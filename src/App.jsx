@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
 import CircuitBreakerNode from './Nodes/CircuitBreakerNode';
+import TransformerNode from './Nodes/TransformerNode';
 import {
   ReactFlow,
   Background,
@@ -12,10 +13,11 @@ import { useState } from 'react';
 
 const nodeTypes = {
   breaker: CircuitBreakerNode,
+  transformer: TransformerNode,
 };
 const initialNodes = [
   { id: 'n1', type: 'breaker', position: { x: 0, y: 0 }, data: { label: 'CB-1' } },
-  { id: 'n2', position: { x: 0, y: 150 }, data: { label: 'Node 2' } },
+  { id: 'n2', type: 'transformer', position: { x: 0, y: 150 }, data: { label: 'T-1' } },
 ];
 
 const initialEdges = [
