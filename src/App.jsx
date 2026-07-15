@@ -42,7 +42,7 @@ export default function App() {
     []
   );
 
-  // ---- drop zone: Moment 3 from your toy example, now for real ----
+ 
   function onDragOver(event) {
     event.preventDefault(); // <-- same line as before: "yes, dropping is allowed here"
   }
@@ -87,6 +87,9 @@ export default function App() {
           onConnect={onConnect}
           onInit={setReactFlowInstance}
           nodeTypes={nodeTypes}
+          defaultEdgeOptions={{
+    style:{ strokeWidth: 3, stroke: '#1d293a' },
+  }}
         >
           <Background />
           <Controls />

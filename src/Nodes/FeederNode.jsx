@@ -2,8 +2,10 @@ import { Handle, Position } from '@xyflow/react';
 
 export default function FeederNode({ data }) {
   return (
-    <div className="flex flex-col items-center">
-      <Handle type="target" position={Position.Top} />
+    <div className="flex flex-row items-center">
+      <div className="text-xs font-semibold">{data.label}</div>
+<div className="relative">
+      <Handle type="target" position={Position.Top}  style={{ bottom: 15 }} />
 
       <svg width="30" height="46" viewBox="-15 -23 30 46">
         {/* the meter circle */}
@@ -16,8 +18,9 @@ export default function FeederNode({ data }) {
         <path d="M -5 4 L 0 12 L 5 4" stroke="#334155" strokeWidth="2" fill="none" />
       </svg>
 
-      <div className="text-xs font-semibold">{data.label}</div>
+    
       {data.sub && <div className="text-[10px] text-slate-500">{data.sub}</div>}
+    </div>
     </div>
   );
 }
